@@ -9,6 +9,8 @@ import {
   SCALE_OPTIONS,
 } from "./core/gameConfig.ts";
 import { BootScene } from "./scenes/BootScene.ts";
+import { ControlsScene } from "./scenes/ControlsScene.ts";
+import { MenuScene } from "./scenes/MenuScene.ts";
 
 export const game = new Phaser.Game({
   type: Phaser.AUTO,
@@ -25,5 +27,5 @@ export const game = new Phaser.Game({
     autoCenter: Phaser.Scale[SCALE_OPTIONS.autoCenter],
   },
   physics: { default: "arcade", arcade: { gravity: { x: 0, y: GRAVITY_Y }, debug: false } },
-  scene: [BootScene],
+  scene: [BootScene, MenuScene, ControlsScene],
 });
