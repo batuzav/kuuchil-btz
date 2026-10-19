@@ -201,7 +201,7 @@
     ],
     "checkpoint": "step-07-movement",
     "files": ["src/core/movement.ts", "tests/movement.test.ts", "tests/tuning.test.ts"],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E2-T2",
