@@ -178,7 +178,7 @@
       "src/scenes/BootScene.ts",
       "tests/assets.test.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E2-T1",
