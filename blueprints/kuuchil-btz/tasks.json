@@ -1,0 +1,491 @@
+[
+  {
+    "id": "E1-T1",
+    "title": "Configure Phaser at 240x160 and boot BootScene",
+    "epic": "01-fundacion-entrada",
+    "dependencies": [],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm test tests/game-config.test.ts` runs THE SYSTEM SHALL assert `GAME_WIDTH` is 240, `GAME_HEIGHT` is 160, `RENDER_OPTIONS` is `{ pixelArt: true, roundPixels: true, antialias: false }` and `SCALE_OPTIONS` is `{ mode: \"FIT\", autoCenter: \"CENTER_BOTH\" }`, and exit 0.",
+      "WHEN `pnpm test tests/game-config.test.ts` runs THE SYSTEM SHALL assert `GAME_WIDTH / TILE_SIZE` is 15, `GAME_HEIGHT / TILE_SIZE` is 10 and `GRAVITY_Y` equals `TUNING.gravityY`.",
+      "WHEN `pnpm typecheck` and `pnpm lint` run THE SYSTEM SHALL exit 0.",
+      "WHEN `pnpm build` runs THE SYSTEM SHALL exit 0 and write `dist/index.html`.",
+      "WHEN `pnpm check:dist` runs after the build THE SYSTEM SHALL find the module script that `dist/index.html` references, non-empty and containing the marker `kuuchil-btz`, and exit 0.",
+      "WHEN `pnpm smoke:dist` runs after the build THE SYSTEM SHALL serve `dist/` with `vite preview` on `127.0.0.1:4173`, receive HTTP 200 for `/` and for the entry script, both containing `kuuchil-btz`, close the server and exit 0."
+    ],
+    "verify": [
+      "pnpm test tests/game-config.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build",
+      "pnpm check:dist",
+      "pnpm smoke:dist"
+    ],
+    "checkpoint": "step-01-boot",
+    "files": [
+      "src/core/tuning.ts",
+      "src/core/gameConfig.ts",
+      "src/main.ts",
+      "src/scenes/BootScene.ts",
+      "tests/game-config.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T2",
+    "title": "Add content types, registry and validator",
+    "epic": "01-fundacion-entrada",
+    "dependencies": ["E1-T1"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm test tests/content-validate.test.ts` runs THE SYSTEM SHALL report 0 errors for a valid in-test fixture (one stage, one boss, one enemy, one map) and exit 0.",
+      "WHEN a fixture map lacks the `ground` tile layer or the `spawns` object layer, or `readMap` throws, THE SYSTEM SHALL return an error whose text contains `ground`, `spawns` or `map` respectively.",
+      "WHEN a fixture spawn references an unregistered `enemyId` or the stage references an unregistered `bossId` THE SYSTEM SHALL return an error whose text contains that id.",
+      "WHEN a fixture boss attack has `telegraphMs` below `TUNING.minTelegraphMs` THE SYSTEM SHALL return an error whose text contains `telegraph`.",
+      "WHEN `pnpm validate:content` runs against the real registry THE SYSTEM SHALL print `content OK` and exit 0."
+    ],
+    "verify": [
+      "pnpm test tests/content-validate.test.ts",
+      "pnpm validate:content",
+      "pnpm typecheck",
+      "pnpm lint"
+    ],
+    "checkpoint": "step-02-content-core",
+    "files": [
+      "src/content/types.ts",
+      "src/content/registry.ts",
+      "src/content/validate.ts",
+      "scripts/validate-content.ts",
+      "tests/content-validate.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T3",
+    "title": "Add input actions, manager and keyboard provider",
+    "epic": "01-fundacion-entrada",
+    "dependencies": ["E1-T1"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm test tests/input.test.ts` runs THE SYSTEM SHALL assert `DEFAULT_BINDINGS` maps `left`/`right`/`up`/`down` to `ArrowLeft`/`ArrowRight`/`ArrowUp`/`ArrowDown`, `jump` to `KeyZ`, `shoot` to `KeyX`, `dash` to `KeyC` and `pause` to `Escape`, with none of `KeyW`, `KeyA`, `KeyS`, `KeyD` among its values.",
+      "WHEN a fake event target dispatches `keydown` with code `KeyZ` THE SYSTEM SHALL report `jump` held and pressed on the first `update()` and held but not pressed on the second.",
+      "WHEN two providers are registered and either one reports an action held THE SYSTEM SHALL report that action held in the snapshot.",
+      "WHEN the fake target dispatches `blur` THE SYSTEM SHALL report every action released on the next `update()`.",
+      "WHEN `pnpm test tests/boundaries.test.ts` runs THE SYSTEM SHALL find no `from \"phaser\"` import under `src/core`, `src/input`, `src/content`, `src/characters` or `src/bosses` and no `addEventListener` call under `src/scenes`, and exit 0."
+    ],
+    "verify": [
+      "pnpm test tests/input.test.ts",
+      "pnpm test tests/boundaries.test.ts",
+      "pnpm typecheck",
+      "pnpm lint"
+    ],
+    "checkpoint": "step-03-input",
+    "files": [
+      "src/input/actions.ts",
+      "src/input/inputManager.ts",
+      "src/input/keyboardProvider.ts",
+      "tests/input.test.ts",
+      "tests/boundaries.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T4",
+    "title": "Add rebind, persistence and controls menu model",
+    "epic": "01-fundacion-entrada",
+    "dependencies": ["E1-T3"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `rebind` assigns a code already bound to another action THE SYSTEM SHALL swap the two codes and return `swappedWith` naming the other action.",
+      "WHEN `rebind` receives a reserved code (`Tab`, `F5`, `F11`, `F12`, `MetaLeft`, `MetaRight`) THE SYSTEM SHALL return `{ ok: false, reason: \"reserved\" }` and leave the bindings unchanged.",
+      "WHEN stored bindings are malformed JSON, miss an action, or contain a duplicate or reserved code THE SYSTEM SHALL return `DEFAULT_BINDINGS` from `loadBindings`.",
+      "WHEN storage is `null` or throws on `getItem`/`setItem` THE SYSTEM SHALL return defaults from `loadBindings` and `false` from `saveBindings` without throwing.",
+      "WHEN the controls menu confirms the `restore` row THE SYSTEM SHALL return `DEFAULT_BINDINGS` with effect `reset`, and WHEN it awaits a key and receives `Escape` THE SYSTEM SHALL return to `browse` with the bindings unchanged."
+    ],
+    "verify": [
+      "pnpm test tests/bindings.test.ts",
+      "pnpm test tests/controls-menu.test.ts",
+      "pnpm typecheck",
+      "pnpm lint"
+    ],
+    "checkpoint": "step-04-bindings",
+    "files": [
+      "src/input/bindings.ts",
+      "src/input/bindingsStore.ts",
+      "src/input/controlsMenu.ts",
+      "tests/bindings.test.ts",
+      "tests/controls-menu.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T5",
+    "title": "Add MenuScene and ControlsScene",
+    "epic": "01-fundacion-entrada",
+    "dependencies": ["E1-T2", "E1-T4"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `grep -qF \"scene: [BootScene, MenuScene, ControlsScene\" src/main.ts` runs THE SYSTEM SHALL exit 0, proving both scenes are in the `scene` array.",
+      "WHEN `pnpm test tests/boundaries.test.ts` runs THE SYSTEM SHALL still find no `addEventListener` call under `src/scenes` and no `phaser` import in the pure directories.",
+      "WHEN `pnpm typecheck` and `pnpm lint` run THE SYSTEM SHALL exit 0.",
+      "WHEN `pnpm build`, `pnpm check:dist` and `pnpm smoke:dist` run THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "grep -qF \"scene: [BootScene, MenuScene, ControlsScene\" src/main.ts",
+      "pnpm test tests/boundaries.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build",
+      "pnpm check:dist",
+      "pnpm smoke:dist"
+    ],
+    "checkpoint": "step-05-menu-controls",
+    "files": [
+      "src/scenes/sceneInput.ts",
+      "src/scenes/MenuScene.ts",
+      "src/scenes/ControlsScene.ts",
+      "src/scenes/BootScene.ts",
+      "src/main.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T6",
+    "title": "Add asset manifest and placeholder textures",
+    "epic": "01-fundacion-entrada",
+    "dependencies": ["E1-T2", "E1-T5"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm test tests/assets.test.ts` runs THE SYSTEM SHALL assert every placeholder `color` and non-null `accent` in `MANIFEST` is a value of `PALETTE`.",
+      "WHEN `pnpm test tests/assets.test.ts` runs THE SYSTEM SHALL assert `MANIFEST[\"tiles-placeholder\"]` is a placeholder with shape `tiles`, width 32 and height 16.",
+      "WHEN `pnpm test tests/assets.test.ts` runs THE SYSTEM SHALL assert every `textureKey`, `projectileTextureKey` and `tilesetTextureKey` referenced by `CONTENT` exists in `MANIFEST`.",
+      "WHEN `drawPlaceholder` draws any placeholder entry onto a recording fake context THE SYSTEM SHALL issue at least one `fillRect` and every `fillRect` SHALL stay inside `0..width` by `0..height`.",
+      "WHEN `pnpm typecheck`, `pnpm lint`, `pnpm build`, `pnpm check:dist` and `pnpm smoke:dist` run THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "pnpm test tests/assets.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build",
+      "pnpm check:dist",
+      "pnpm smoke:dist"
+    ],
+    "checkpoint": "step-06-assets",
+    "files": [
+      "src/assets/palette.ts",
+      "src/assets/manifest.ts",
+      "src/assets/placeholders.ts",
+      "src/scenes/BootScene.ts",
+      "tests/assets.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T1",
+    "title": "Add pure movement logic and tuning sanity tests",
+    "epic": "02-movimiento-escenario",
+    "dependencies": ["E1-T1"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `applyJumpCut` receives an upward velocity (negative) with jump released THE SYSTEM SHALL return it multiplied by `TUNING.jumpCutMultiplier`, and SHALL return it unchanged while jump is held or while falling.",
+      "WHEN `canJump` receives `msSinceGrounded` at most `coyoteTimeMs` and `msSinceJumpPressed` at most `jumpBufferMs` THE SYSTEM SHALL return true, and false when either exceeds its window.",
+      "WHEN `horizontalVelocity` receives left and right both held THE SYSTEM SHALL return 0, and `TUNING.runSpeed` times the direction otherwise.",
+      "WHEN `pnpm test tests/tuning.test.ts` runs THE SYSTEM SHALL assert `apexHeight(TUNING)` is above 48 px, `runningJumpDistance(TUNING)` is above 48 px, `dashDistance(TUNING)` is above 32 px, `TUNING.shotSpeed * TUNING.shotLifetimeMs / 1000` is at least 240 and `TUNING.telegraphBlinkMs` is at least 167.",
+      "WHEN `pnpm typecheck` and `pnpm lint` run THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "pnpm test tests/movement.test.ts",
+      "pnpm test tests/tuning.test.ts",
+      "pnpm typecheck",
+      "pnpm lint"
+    ],
+    "checkpoint": "step-07-movement",
+    "files": ["src/core/movement.ts", "tests/movement.test.ts", "tests/tuning.test.ts"],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T2",
+    "title": "Add run and jump abilities with ability registry",
+    "epic": "02-movimiento-escenario",
+    "dependencies": ["E1-T3", "E2-T1"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `createAbility(\"run\", TUNING)` updates with `right` held THE SYSTEM SHALL return `velocityX` equal to `TUNING.runSpeed`.",
+      "WHEN `jump` is pressed while airborne and the character lands within `TUNING.jumpBufferMs` THE SYSTEM SHALL return `velocityY` equal to `-TUNING.jumpVelocity` on the first grounded update.",
+      "WHEN `jump` is pressed within `TUNING.coyoteTimeMs` after leaving the ground THE SYSTEM SHALL jump, and WHEN pressed after that window THE SYSTEM SHALL not.",
+      "WHEN `createAbility(\"wall-jump\", TUNING)` is called THE SYSTEM SHALL throw an error whose message contains `wall-jump`.",
+      "WHEN `pnpm test tests/boundaries.test.ts`, `pnpm typecheck` and `pnpm lint` run THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "pnpm test tests/abilities-move.test.ts",
+      "pnpm test tests/boundaries.test.ts",
+      "pnpm typecheck",
+      "pnpm lint"
+    ],
+    "checkpoint": "step-08-abilities-move",
+    "files": [
+      "src/characters/ability.ts",
+      "src/characters/abilities/run.ts",
+      "src/characters/abilities/jump.ts",
+      "src/characters/abilityRegistry.ts",
+      "tests/abilities-move.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T3",
+    "title": "Add shoot and dash abilities",
+    "epic": "02-movimiento-escenario",
+    "dependencies": ["E2-T2"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `dash` is pressed while grounded THE SYSTEM SHALL return `velocityX` equal to `TUNING.dashSpeed` times `facing` with `ignoreGravity` true for `TUNING.dashDurationMs`, then stop overriding velocity.",
+      "WHEN `dash` is pressed again before `TUNING.dashCooldownMs` has elapsed since the previous dash ended THE SYSTEM SHALL not start a new dash.",
+      "WHEN one dash has been used in the air THE SYSTEM SHALL refuse a second air dash until an update with `grounded` true.",
+      "WHEN `shoot` is pressed with `activeShots` below `TUNING.maxShotsOnScreen` and the cooldown elapsed THE SYSTEM SHALL return `fire: true`, and SHALL not fire when `activeShots` equals `TUNING.maxShotsOnScreen`.",
+      "WHEN `pnpm typecheck` and `pnpm lint` run THE SYSTEM SHALL exit 0."
+    ],
+    "verify": ["pnpm test tests/abilities-combat.test.ts", "pnpm typecheck", "pnpm lint"],
+    "checkpoint": "step-09-abilities-combat",
+    "files": [
+      "src/characters/abilities/shoot.ts",
+      "src/characters/abilities/dash.ts",
+      "src/characters/abilityRegistry.ts",
+      "tests/abilities-combat.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T4",
+    "title": "Add character data, Player and Projectile",
+    "epic": "02-movimiento-escenario",
+    "dependencies": ["E1-T6", "E2-T3"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm test tests/character.test.ts` runs THE SYSTEM SHALL assert `DEFAULT_CHARACTER_ID` (`kuuchil`) is registered and every id in its `abilities` resolves with `hasAbility`.",
+      "WHEN `pnpm test tests/character.test.ts` runs THE SYSTEM SHALL assert the character's `abilities` are exactly `run`, `jump`, `dash`, `shoot` in that order and its hitbox has positive size and non-negative offsets.",
+      "WHEN `pnpm test tests/assets.test.ts` and `pnpm validate:content` run with the character registered THE SYSTEM SHALL exit 0.",
+      "WHEN `pnpm typecheck`, `pnpm lint` and `pnpm build` run THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "pnpm test tests/character.test.ts",
+      "pnpm test tests/assets.test.ts",
+      "pnpm validate:content",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build"
+    ],
+    "checkpoint": "step-10-character-player",
+    "files": [
+      "src/content/characters/kuuchil.ts",
+      "src/content/registry.ts",
+      "src/entities/Player.ts",
+      "src/entities/Projectile.ts",
+      "tests/character.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T5",
+    "title": "Add enemy data modules",
+    "epic": "02-movimiento-escenario",
+    "dependencies": ["E1-T6"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm test tests/content-registry.test.ts` runs THE SYSTEM SHALL assert enemies `walker`, `hopper` and `turret` are registered and every id is unique within its kind.",
+      "WHEN `pnpm test tests/content-registry.test.ts` runs THE SYSTEM SHALL assert every registered enemy, boss and character hitbox has positive width and height and non-negative offsets.",
+      "WHEN `pnpm test tests/content-registry.test.ts` runs THE SYSTEM SHALL assert every `turret` has `rangePx`, `actionIntervalMs` and `projectileSpeed` above 0 and every `hopper` has `jumpVelocity` and `actionIntervalMs` above 0.",
+      "WHEN `pnpm test tests/assets.test.ts` and `pnpm validate:content` run THE SYSTEM SHALL exit 0, the latter printing `content OK`.",
+      "WHEN `pnpm typecheck` and `pnpm lint` run THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "pnpm test tests/content-registry.test.ts",
+      "pnpm test tests/assets.test.ts",
+      "pnpm validate:content",
+      "pnpm typecheck",
+      "pnpm lint"
+    ],
+    "checkpoint": "step-11-enemy-data",
+    "files": [
+      "src/content/enemies/walker.ts",
+      "src/content/enemies/hopper.ts",
+      "src/content/enemies/turret.ts",
+      "src/content/registry.ts",
+      "tests/content-registry.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T6",
+    "title": "Add boss data, stage 1 and tilemap StageScene",
+    "epic": "02-movimiento-escenario",
+    "dependencies": ["E2-T4", "E2-T5"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm validate:content` runs THE SYSTEM SHALL validate `stage-01` against `public/maps/stage-01.tmj` (layers `ground` and `spawns`, one `player_start`, one `boss_spawn`, at least one `boss_trigger`, every `enemyId` registered, boss `sentinel` registered) and print `content OK`.",
+      "WHEN `pnpm test tests/content-validate.test.ts` runs THE SYSTEM SHALL report 0 errors for the real registry and exit 0.",
+      "WHEN `grep -qF \"scene: [BootScene, MenuScene, ControlsScene, StageScene]\" src/main.ts` runs THE SYSTEM SHALL exit 0, proving `StageScene` is in the `scene` array.",
+      "WHEN `pnpm typecheck`, `pnpm lint`, `pnpm build`, `pnpm check:dist` and `pnpm smoke:dist` run THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "pnpm validate:content",
+      "pnpm test tests/content-validate.test.ts",
+      "grep -qF \"scene: [BootScene, MenuScene, ControlsScene, StageScene]\" src/main.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build",
+      "pnpm check:dist",
+      "pnpm smoke:dist"
+    ],
+    "checkpoint": "step-12-stage-map",
+    "files": [
+      "src/content/bosses/sentinel.ts",
+      "src/content/stages/stage-01/stage.ts",
+      "src/content/registry.ts",
+      "src/scenes/StageScene.ts",
+      "src/main.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T1",
+    "title": "Add health, damage, HUD and death restart",
+    "epic": "03-combate-jefe-entrega",
+    "dependencies": ["E2-T6"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `applyDamage` hits a state whose `invulnMs` is 0 THE SYSTEM SHALL reduce `hp` by the amount, never below 0, set `invulnMs` to the given window and return `applied: true`.",
+      "WHEN `applyDamage` hits a state whose `invulnMs` is above 0 THE SYSTEM SHALL return `applied: false` with `hp` unchanged.",
+      "WHEN `tickHealth` advances by at least the remaining `invulnMs` THE SYSTEM SHALL return `invulnMs` 0.",
+      "WHEN `hp` reaches 0 THE SYSTEM SHALL report `isDead` true and `hpFraction` 0.",
+      "WHEN `pnpm typecheck`, `pnpm lint`, `pnpm build`, `pnpm check:dist` and `pnpm smoke:dist` run THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "pnpm test tests/health.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build",
+      "pnpm check:dist",
+      "pnpm smoke:dist"
+    ],
+    "checkpoint": "step-13-health-hud",
+    "files": [
+      "src/core/health.ts",
+      "tests/health.test.ts",
+      "src/scenes/hud.ts",
+      "src/entities/Player.ts",
+      "src/scenes/StageScene.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T2",
+    "title": "Add data-driven enemies to the stage",
+    "epic": "03-combate-jefe-entrega",
+    "dependencies": ["E3-T1"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `walkerDirection` is told the path ahead is blocked or has no ground THE SYSTEM SHALL return the reversed direction, and SHALL keep the direction otherwise.",
+      "WHEN a hopper's timer reaches its `actionIntervalMs` while grounded THE SYSTEM SHALL return `jump: true` once and reset the timer to 0, and SHALL not jump while airborne.",
+      "WHEN a turret's timer reaches its `actionIntervalMs` with the player within `rangePx` THE SYSTEM SHALL return `fire: true`, and SHALL never return `fire: true` while the player is beyond `rangePx`.",
+      "WHEN `pnpm test tests/boundaries.test.ts`, `pnpm typecheck`, `pnpm lint`, `pnpm build`, `pnpm check:dist` and `pnpm smoke:dist` run THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "pnpm test tests/enemy-ai.test.ts",
+      "pnpm test tests/boundaries.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build",
+      "pnpm check:dist",
+      "pnpm smoke:dist"
+    ],
+    "checkpoint": "step-14-enemies",
+    "files": [
+      "src/core/enemyAi.ts",
+      "tests/enemy-ai.test.ts",
+      "src/entities/Enemy.ts",
+      "src/scenes/StageScene.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T3",
+    "title": "Add boss FSM engine and telegraph invariant",
+    "epic": "03-combate-jefe-entrega",
+    "dependencies": ["E2-T6"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `stepBoss` advances a boss from `createBossState` at full hp THE SYSTEM SHALL visit `intro`, `idle`, `telegraph`, `active`, `recovery` in that order and then return to `idle`.",
+      "WHEN the hp fraction drops to a later phase's `enterAtHpFraction` THE SYSTEM SHALL switch `phaseIndex` on the next entry to `idle` and restart that phase's `attackCycle` at index 0.",
+      "WHEN hp is 0 in any state THE SYSTEM SHALL enter `defeated` and remain there on every later step.",
+      "WHEN `pnpm test tests/telegraph.test.ts` simulates every registered boss for 20000 ms at full and at half hp in 16 ms steps THE SYSTEM SHALL never enter `active` before spending at least that attack's `telegraphMs` in `telegraph`, and every attack's `telegraphMs` SHALL be at least `TUNING.minTelegraphMs`.",
+      "WHEN `spreadVelocities(3, 120, 1)` runs THE SYSTEM SHALL return 3 vectors of magnitude 120 (within 0.001), symmetric around the horizontal and with positive `vx`.",
+      "WHEN `pnpm typecheck` and `pnpm lint` run THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "pnpm test tests/boss-fsm.test.ts",
+      "pnpm test tests/boss-patterns.test.ts",
+      "pnpm test tests/telegraph.test.ts",
+      "pnpm typecheck",
+      "pnpm lint"
+    ],
+    "checkpoint": "step-15-boss-engine",
+    "files": [
+      "src/bosses/fsm.ts",
+      "src/bosses/patterns.ts",
+      "tests/boss-fsm.test.ts",
+      "tests/boss-patterns.test.ts",
+      "tests/telegraph.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T4",
+    "title": "Add boss fight and win/lose flow",
+    "epic": "03-combate-jefe-entrega",
+    "dependencies": ["E3-T2", "E3-T3"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `nextFlow(\"exploring\", \"enteredBossTrigger\")` runs THE SYSTEM SHALL return `bossIntro`, and `nextFlow(\"bossIntro\", \"bossIntroDone\")` SHALL return `bossFight`.",
+      "WHEN `bossFight` receives `bossDefeated` THE SYSTEM SHALL return `won`, and `won` SHALL stay `won` on `playerDied`.",
+      "WHEN any state other than `won` receives `playerDied` THE SYSTEM SHALL return `lost`, and `nextFlow(\"lost\", \"restart\")` SHALL return `exploring`.",
+      "WHEN `pnpm test` runs the whole suite THE SYSTEM SHALL exit 0 with 0 failed.",
+      "WHEN `pnpm typecheck`, `pnpm lint`, `pnpm build`, `pnpm check:dist` and `pnpm smoke:dist` run THE SYSTEM SHALL exit 0."
+    ],
+    "verify": [
+      "pnpm test tests/stage-flow.test.ts",
+      "pnpm test",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build",
+      "pnpm check:dist",
+      "pnpm smoke:dist"
+    ],
+    "checkpoint": "step-16-boss-fight",
+    "files": [
+      "src/core/stageFlow.ts",
+      "tests/stage-flow.test.ts",
+      "src/entities/Boss.ts",
+      "src/scenes/StageScene.ts",
+      "src/scenes/hud.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T5",
+    "title": "Add docs, production build and final gate",
+    "epic": "03-combate-jefe-entrega",
+    "dependencies": ["E3-T4"],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN `pnpm test tests/docs.test.ts` runs THE SYSTEM SHALL assert that every backticked path in `README.md`, `docs/PLAYTEST.md`, `docs/DEPLOY.md` and `.claude/skills/*/SKILL.md` that starts with `src/`, `public/`, `scripts/` or `tests/`, has a file extension and contains no `<` or `*` exists on disk.",
+      "WHEN `pnpm test tests/docs.test.ts` runs THE SYSTEM SHALL assert `docs/PLAYTEST.md` contains every key of `TUNING` and `docs/DEPLOY.md` contains `pnpm build` and `dist/`.",
+      "WHEN `pnpm install --frozen-lockfile` runs THE SYSTEM SHALL exit 0.",
+      "WHEN `pnpm gate` runs THE SYSTEM SHALL run lint, typecheck, test, validate:content, build, check:dist and smoke:dist in that order and exit 0."
+    ],
+    "verify": ["pnpm test tests/docs.test.ts", "pnpm install --frozen-lockfile", "pnpm gate"],
+    "checkpoint": "step-17-release",
+    "files": ["README.md", "docs/PLAYTEST.md", "docs/DEPLOY.md", "tests/docs.test.ts"],
+    "status": "pending"
+  }
+]

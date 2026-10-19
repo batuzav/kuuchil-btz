@@ -1,0 +1,9 @@
+# Dependencias y salida de build
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+# Este proyecto no usa variables de entorno; se ignoran por seguridad si alguien crea una
+.env
+.env.*
