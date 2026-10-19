@@ -29,7 +29,7 @@
       "src/scenes/BootScene.ts",
       "tests/game-config.test.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E1-T2",
