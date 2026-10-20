@@ -39,6 +39,17 @@ export function extractSpawns(map: unknown, spawnLayer: string): StageSpawns | n
   return out;
 }
 
+function standsOnGround(ground: Obj, x: number, y: number): boolean {
+  const w = Number(ground.width);
+  const data = Array.isArray(ground.data) ? ground.data : [];
+  const solid = (px: number, py: number): boolean => {
+    const col = Math.floor(px / 16);
+    const row = Math.floor(py / 16);
+    return col >= 0 && col < w && row >= 0 && Number(data[row * w + col]) > 0;
+  };
+  return solid(x, y) && !solid(x, y - 1);
+}
+
 const badHitbox = (h: Hitbox): boolean =>
   h.width <= 0 || h.height <= 0 || h.offsetX < 0 || h.offsetY < 0;
 
@@ -107,6 +118,15 @@ export function validateContent(
       for (const en of spawns.enemies)
         if (!enemyIds.has(en.enemyId))
           errors.push(`${stage.id}: enemyId no registrado '${en.enemyId}'`);
+      // Los puntos son los pies del sprite: debe haber suelo debajo y aire encima, o queda flotando/incrustado.
+      if (ground) {
+        const feet = [...spawns.playerStarts, ...spawns.bossSpawns, ...spawns.enemies];
+        for (const p of feet)
+          if (!standsOnGround(ground, p.x, p.y))
+            errors.push(
+              `${stage.id}: spawn sin suelo bajo los pies o incrustado (x=${p.x}, y=${p.y})`,
+            );
+      }
     }
     for (const id of [stage.bossId, ...stage.minibossIds])
       if (!bossIds.has(id)) errors.push(`${stage.id}: jefe no registrado ${id}`);

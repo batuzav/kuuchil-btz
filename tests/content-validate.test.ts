@@ -68,14 +68,30 @@ const fixture = (telegraphMs = 300, bossId = "b1"): ContentRegistry => ({
   characters: [],
 });
 
-const map = (over: { ground?: boolean; spawns?: boolean; enemyId?: string } = {}) => ({
+const map = (
+  over: {
+    ground?: boolean;
+    spawns?: boolean;
+    enemyId?: string;
+    groundData?: number[];
+    feetY?: number;
+  } = {},
+) => ({
   tilewidth: 16,
   tileheight: 16,
   tilesets: [{ name: "ts" }],
   layers: [
     ...(over.ground === false
       ? []
-      : [{ type: "tilelayer", name: "ground", width: 3, height: 2, data: [0, 0, 0, 1, 1, 1] }]),
+      : [
+          {
+            type: "tilelayer",
+            name: "ground",
+            width: 3,
+            height: 2,
+            data: over.groundData ?? [0, 0, 0, 1, 1, 1],
+          },
+        ]),
     ...(over.spawns === false
       ? []
       : [
@@ -83,13 +99,13 @@ const map = (over: { ground?: boolean; spawns?: boolean; enemyId?: string } = {}
             type: "objectgroup",
             name: "spawns",
             objects: [
-              { type: "player_start", x: 0, y: 0 },
-              { type: "boss_spawn", x: 1, y: 1 },
+              { type: "player_start", x: 0, y: over.feetY ?? 16 },
+              { type: "boss_spawn", x: 1, y: over.feetY ?? 16 },
               { type: "boss_trigger", x: 0, y: 0, width: 16, height: 16 },
               {
                 type: "enemy",
                 x: 2,
-                y: 2,
+                y: over.feetY ?? 16,
                 properties: [{ name: "enemyId", value: over.enemyId ?? "e1" }],
               },
             ],
@@ -127,6 +143,14 @@ describe("validateContent", () => {
 
   it("flags an unregistered bossId", () => {
     expect(errorsOf(fixture(300, "nope"), () => map())).toContain("nope");
+  });
+
+  it("flags a spawn floating above the ground", () => {
+    expect(errorsOf(fixture(), () => map({ feetY: 0 }))).toContain("spawn");
+  });
+
+  it("flags a spawn embedded in a solid tile", () => {
+    expect(errorsOf(fixture(), () => map({ groundData: [1, 0, 0, 1, 1, 1] }))).toContain("spawn");
   });
 
   it("flags a telegraph below the minimum", () => {
