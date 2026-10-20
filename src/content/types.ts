@@ -5,6 +5,22 @@ export type Hitbox = {
   readonly offsetY: number;
 };
 
+export type CharacterAnimState =
+  | "idle"
+  | "run"
+  | "jump"
+  | "fall"
+  | "dash"
+  | "shoot"
+  | "hurt"
+  | "dead";
+
+export type AnimationDef = {
+  readonly frames: readonly number[]; // índices de cuadro en la hoja (fila * columnas + columna)
+  readonly fps: number;
+  readonly loop: boolean;
+};
+
 export type CharacterDef = {
   readonly id: string;
   readonly name: string;
@@ -15,6 +31,7 @@ export type CharacterDef = {
   readonly maxHp: number;
   readonly shotDamage: number;
   readonly abilities: readonly string[];
+  readonly animations: Readonly<Record<CharacterAnimState, AnimationDef>>;
 };
 
 export type EnemyBehavior = "walker" | "hopper" | "turret";

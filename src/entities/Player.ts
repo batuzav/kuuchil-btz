@@ -1,8 +1,9 @@
 import Phaser from "phaser";
 import type { Ability, AbilityEffect } from "../characters/ability.ts";
+import { animationKey, pickAnimation } from "../characters/animationState.ts";
 import { createAbility } from "../characters/abilityRegistry.ts";
-import type { CharacterDef } from "../content/types.ts";
-import { type HealthState, applyDamage, createHealth, tickHealth } from "../core/health.ts";
+import type { CharacterAnimState, CharacterDef } from "../content/types.ts";
+import { type HealthState, applyDamage, createHealth, isDead, tickHealth } from "../core/health.ts";
 import { TUNING } from "../core/tuning.ts";
 import type { ActionSnapshot } from "../input/actions.ts";
 import { fireProjectile } from "./Projectile.ts";
@@ -14,6 +15,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   health: HealthState;
   private facing: 1 | -1 = 1;
   private knockbackMs = 0;
+  private shootMs = 0;
+  private hurtMs = 0;
 
   constructor(
     scene: Phaser.Scene,
@@ -39,6 +42,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const body = this.body as Phaser.Physics.Arcade.Body;
     this.health = tickHealth(this.health, dtMs);
     this.knockbackMs = Math.max(0, this.knockbackMs - dtMs);
+    this.shootMs = Math.max(0, this.shootMs - dtMs);
+    this.hurtMs = Math.max(0, this.hurtMs - dtMs);
     this.setAlpha(
       this.health.invulnMs > 0 && Math.floor(this.health.invulnMs / 100) % 2 === 0 ? 0.4 : 1,
     );
@@ -69,6 +74,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setFlipX(this.facing < 0);
 
     if (merged.fire) {
+      this.shootMs = TUNING.shootPoseMs;
       fireProjectile(
         this.shots,
         this.x + this.def.muzzle.x * this.facing,
@@ -81,6 +87,23 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         TUNING.shotLifetimeMs,
       );
     }
+
+    this.playState(
+      pickAnimation({
+        grounded: body.blocked.down,
+        velocityX: body.velocity.x,
+        velocityY: body.velocity.y,
+        dashing: merged.ignoreGravity === true,
+        shooting: this.shootMs > 0,
+        hurt: this.hurtMs > 0,
+        dead: isDead(this.health),
+      }),
+    );
+  }
+
+  playState(state: CharacterAnimState): void {
+    const key = animationKey(this.def.id, state);
+    if (this.scene.anims.exists(key)) this.anims.play(key, true);
   }
 
   takeDamage(amount: number, fromX: number): void {
@@ -88,6 +111,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (!result.applied) return;
     this.health = result.state;
     this.knockbackMs = 150;
+    this.hurtMs = TUNING.hurtPoseMs;
     this.setVelocityX(this.x >= fromX ? TUNING.knockbackSpeed : -TUNING.knockbackSpeed);
   }
 }

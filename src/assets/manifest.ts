@@ -28,7 +28,7 @@ const rect = (width: number, height: number, color: number, accent: number | nul
 });
 
 export const MANIFEST: Readonly<Record<string, AssetSpec>> = {
-  player: rect(16, 32, PALETTE.player, PALETTE.playerAccent),
+  player: { kind: "file", path: "sprites/kuuchil.png", frameWidth: 48, frameHeight: 48 },
   "projectile-player": rect(4, 4, PALETTE.projectile, null),
   "enemy-walker": rect(24, 24, PALETTE.enemy, PALETTE.hudFrame),
   "enemy-hopper": rect(24, 24, PALETTE.enemy, PALETTE.playerAccent),

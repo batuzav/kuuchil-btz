@@ -2,7 +2,9 @@ import Phaser from "phaser";
 import { MANIFEST } from "../assets/manifest.ts";
 import { TEXT_STYLE } from "../assets/palette.ts";
 import { generatePlaceholders } from "../assets/placeholders.ts";
+import { CONTENT } from "../content/registry.ts";
 import { GAME_TITLE, SCENES } from "../core/gameConfig.ts";
+import { createCharacterAnimations } from "../entities/animations.ts";
 import { getBrowserStorage, loadBindings } from "../input/bindingsStore.ts";
 import { BINDINGS_REGISTRY_KEY } from "./sceneInput.ts";
 
@@ -34,6 +36,7 @@ export class BootScene extends Phaser.Scene {
         this.textures.addCanvas(key, canvas);
       },
     );
+    for (const character of CONTENT.characters) createCharacterAnimations(this, character);
     this.registry.set(BINDINGS_REGISTRY_KEY, loadBindings(getBrowserStorage()));
     this.add.text(8, 8, GAME_TITLE, { ...TEXT_STYLE, fontSize: "16px" });
     this.scene.start(SCENES.menu);

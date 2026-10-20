@@ -228,6 +228,7 @@ export class StageScene extends Phaser.Scene {
     this.dispatchFlow("playerDied");
     this.hud?.showMessage("K.O.");
     this.player?.setVelocity(0, 0);
+    this.player?.playState("dead");
     this.time.delayedCall(TUNING.deathRestartDelayMs, () => {
       this.dispatchFlow("restart");
       this.scene.restart({ stageId: this.stageId });

@@ -2,11 +2,13 @@
 
 Esta guía sirve para dibujar (tú o un artista) el sprite de Kuuchil y pasárselo al proyecto. Hoy el juego usa un rectángulo azul de 16×16 px como placeholder.
 
-## Estado actual del juego
+## Estado actual del juego (2026-10-20)
 
-- El personaje es **una sola imagen fija**. El código solo la voltea (`flipX`) según hacia dónde mira.
-- **No hay animaciones todavía.** Cambiar una imagen suelta funciona con la skill `swap-art`; animar requiere construir antes el sistema de animaciones (ver el final de este documento).
-- La hitbox (la zona que recibe golpes) vive en `src/content/characters/kuuchil.ts` y **no depende del dibujo**: hoy es 10×14 px con desplazamiento (3, 2).
+- Kuuchil ya tiene arte real y animaciones: `public/sprites/kuuchil.png`, hoja de celdas de 48×48, 9 columnas y una fila por animación (idle, run, jump, dash, shoot, hurt, death).
+- El cuerpo dibujado mide unos 10×37 px y los pies quedan en la última fila de la celda (origen 0.5, 1 de Phaser).
+- Qué cuadros usa cada animación, a cuántos fps, y la hitbox y la boca de la pistola, viven en `src/content/characters/kuuchil.ts`. La hitbox mide 10×30 y está centrada en la celda para que no se desplace al voltear el sprite.
+- El código que elige la animación según el estado está en `src/characters/animationState.ts` (probado en `tests/animation-state.test.ts`).
+- El arte se generó con Pixellab. Los cuadros originales están en `art/pixellab/frames/` y `node art/tools/build-sheet.mjs` rehace la hoja (recorta de 64 a 48 y alinea los pies).
 
 ## Qué hay que entregar
 
@@ -67,10 +69,11 @@ Consejos de estilo: paleta limitada, contorno oscuro, sin degradados ni suavizad
 
 Con una sola imagen fija esto ya funciona hoy. Con una hoja de varias animaciones, falta el siguiente paso.
 
-## Lo que falta construir: sistema de animaciones
+## Cómo cambiar un cuadro o una animación
 
-Es una tarea nueva y pequeña que no estaba en los 17 pasos del plan. Consiste en elegir la animación según el estado del jugador: en el suelo, corriendo, saltando, cayendo, en dash, disparando o herido.
+1. Pon los cuadros nuevos en `art/pixellab/frames/<animación>/<n>.png` (48×48 o 64×64, mirando a la derecha).
+2. `node art/tools/build-sheet.mjs` regenera `public/sprites/kuuchil.png`.
+3. Si cambió el número de cuadros o cuáles se usan, edita `animations` en `src/content/characters/kuuchil.ts`.
+4. `pnpm gate` y prueba en `pnpm dev`.
 
-Las animaciones de cada personaje irían en sus **datos** (`src/content/characters/`), de modo que un segundo personaje en el futuro traiga las suyas sin tocar el motor.
-
-**Orden recomendado:** primero el sprite temporal hecho en código para probar todo el sistema, y después sustituir la hoja por tu arte editando solo el manifiesto.
+Un personaje nuevo en el futuro: su propia hoja, su entrada en `src/assets/manifest.ts` y su archivo en `src/content/characters/` con sus `animations`.

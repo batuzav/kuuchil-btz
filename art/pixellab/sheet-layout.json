@@ -1,0 +1,37 @@
+{
+  "idle": {
+    "row": 0,
+    "frames": 4,
+    "firstIndex": 0
+  },
+  "run": {
+    "row": 1,
+    "frames": 8,
+    "firstIndex": 9
+  },
+  "jump": {
+    "row": 2,
+    "frames": 9,
+    "firstIndex": 18
+  },
+  "dash": {
+    "row": 3,
+    "frames": 5,
+    "firstIndex": 27
+  },
+  "shoot": {
+    "row": 4,
+    "frames": 9,
+    "firstIndex": 36
+  },
+  "hurt": {
+    "row": 5,
+    "frames": 6,
+    "firstIndex": 45
+  },
+  "death": {
+    "row": 6,
+    "frames": 7,
+    "firstIndex": 54
+  }
+}

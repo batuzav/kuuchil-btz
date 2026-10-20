@@ -18,6 +18,9 @@ export const TUNING = {
   knockbackSpeed: 80, // px/s de retroceso al recibir daño
   minTelegraphMs: 250, // ms mínimos de aviso de todo ataque de jefe (regla de justicia)
   telegraphBlinkMs: 170, // ms por alternancia del destello (< 3 destellos/s)
+  shootPoseMs: 280, // ms que dura la pose de disparo tras disparar (solo parado)
+  hurtPoseMs: 250, // ms que dura la pose de herido tras recibir daño
+  runAnimMinSpeed: 10, // px/s: por debajo de esto se ve el idle en vez de la carrera
   deathRestartDelayMs: 1200, // ms entre "K.O." y reiniciar la etapa
 } as const;
 

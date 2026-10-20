@@ -24,6 +24,9 @@ La sensación del control se ajusta en `src/core/tuning.ts`. Cambia **una variab
 | `knockbackSpeed` | 80 | retroceso al recibir daño | empuja más lejos / casi no empuja |
 | `minTelegraphMs` | 250 | aviso mínimo de todo ataque de jefe | más justo / más difícil de leer |
 | `telegraphBlinkMs` | 170 | duración de cada destello del aviso | parpadeo más lento / más rápido (no bajar de 167) |
+| `shootPoseMs` | 280 | cuánto dura la pose de disparo tras disparar (solo parado) | pose más larga / más corta |
+| `hurtPoseMs` | 250 | cuánto dura la pose de herido tras recibir daño | pose más larga / más corta |
+| `runAnimMinSpeed` | 10 | velocidad por debajo de la cual se ve el idle en vez de correr | más tiempo en idle / pasa a correr antes |
 | `deathRestartDelayMs` | 1200 | pausa entre K.O. y reinicio | pausa más larga / reinicio inmediato |
 
 ## Procedimiento
