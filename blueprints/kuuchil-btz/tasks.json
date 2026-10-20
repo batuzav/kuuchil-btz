@@ -486,6 +486,6 @@
     "verify": ["pnpm test tests/docs.test.ts", "pnpm install --frozen-lockfile", "pnpm gate"],
     "checkpoint": "step-17-release",
     "files": ["README.md", "docs/PLAYTEST.md", "docs/DEPLOY.md", "tests/docs.test.ts"],
-    "status": "pending"
+    "status": "done"
   }
 ]
