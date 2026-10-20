@@ -7,6 +7,8 @@
 > Versión del blueprint: 1
 > Versiones verificadas: 2026-10-19 — ver §11 para la procedencia por paquete
 
+> **Nota (2026-10-20): la carpeta `workspace/` ya no existe.** Era solo la plantilla de origen del Bootstrap y ya se copió a la raíz del proyecto, que es ahora la **única copia** de esos archivos (`package.json`, configs, `CLAUDE.md`, `.claude/`, `scripts/`, `public/`). Este bundle conserva únicamente la documentación del plan (`blueprint.md`, `tasks.json`, `epics/`). Donde el texto de abajo menciona `workspace/`, es historia del diseño: edita siempre los archivos de la raíz. El Bootstrap de §10 fue de una sola vez y ya no se puede re-ejecutar tal cual.
+
 **Cómo usar este bundle.** Este directorio (`blueprints/kuuchil-btz/`) vive *dentro* del proyecto. El builder ejecuta el bloque *Bootstrap* de §10 desde la raíz del proyecto: copia el contenido de `workspace/` a la raíz con una copia que nunca pisa archivos existentes, crea el repositorio git, instala y hace el primer commit. Después trabaja `tasks.json` en orden, abriendo solo el epic de cada tarea (`epics/`). Los comandos `verify` corren siempre desde la raíz del proyecto.
 
 ---
