@@ -437,7 +437,7 @@
       "tests/boss-patterns.test.ts",
       "tests/telegraph.test.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E3-T4",
