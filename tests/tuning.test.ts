@@ -3,8 +3,8 @@ import { apexHeight, dashDistance, runningJumpDistance } from "../src/core/movem
 import { TUNING } from "../src/core/tuning.ts";
 
 describe("tuning sanity (properties the stage-01 map relies on)", () => {
-  it("reaches 3-tile platforms", () => {
-    expect(apexHeight(TUNING)).toBeGreaterThan(48);
+  it("reaches the highest platform of stage 1 (64 px above the ground)", () => {
+    expect(apexHeight(TUNING)).toBeGreaterThan(64);
   });
   it("crosses a 3-tile pit with a running jump", () => {
     expect(runningJumpDistance(TUNING)).toBeGreaterThan(48);

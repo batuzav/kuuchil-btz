@@ -5,7 +5,7 @@ export const turret: EnemyDef = {
   name: "Torreta",
   behavior: "turret",
   textureKey: "enemy-turret",
-  hitbox: { width: 14, height: 14, offsetX: 1, offsetY: 2 },
+  hitbox: { width: 20, height: 20, offsetX: 2, offsetY: 4 },
   maxHp: 4,
   contactDamage: 1,
   speed: 0,

@@ -2,7 +2,7 @@
 export const TUNING = {
   runSpeed: 90, // px/s horizontal al correr
   gravityY: 900, // px/s² gravedad del mundo Arcade
-  jumpVelocity: 320, // px/s hacia arriba al saltar (apex ≈ 57 px ≈ 3.5 tiles)
+  jumpVelocity: 360, // px/s hacia arriba al saltar (apex ≈ 72 px ≈ 4.5 tiles)
   jumpCutMultiplier: 0.4, // al soltar salto subiendo: vy *= esto (salto variable)
   maxFallSpeed: 320, // px/s velocidad máxima de caída
   coyoteTimeMs: 80, // ms tras dejar el suelo en que aún se puede saltar

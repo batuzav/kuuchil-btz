@@ -93,7 +93,7 @@ export class Boss extends Phaser.Physics.Arcade.Sprite {
           fireProjectile(
             bossShots,
             this.x,
-            this.y - 16,
+            this.y - this.def.hitbox.offsetY - this.def.hitbox.height / 2,
             vx,
             vy,
             "projectile-enemy",

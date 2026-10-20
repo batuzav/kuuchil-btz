@@ -5,7 +5,7 @@ export const hopper: EnemyDef = {
   name: "Saltarín",
   behavior: "hopper",
   textureKey: "enemy-hopper",
-  hitbox: { width: 12, height: 12, offsetX: 2, offsetY: 4 },
+  hitbox: { width: 18, height: 18, offsetX: 3, offsetY: 6 },
   maxHp: 2,
   contactDamage: 2,
   speed: 40,

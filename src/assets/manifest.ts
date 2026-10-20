@@ -28,13 +28,13 @@ const rect = (width: number, height: number, color: number, accent: number | nul
 });
 
 export const MANIFEST: Readonly<Record<string, AssetSpec>> = {
-  player: rect(16, 16, PALETTE.player, PALETTE.playerAccent),
+  player: rect(16, 32, PALETTE.player, PALETTE.playerAccent),
   "projectile-player": rect(4, 4, PALETTE.projectile, null),
-  "enemy-walker": rect(16, 16, PALETTE.enemy, PALETTE.hudFrame),
-  "enemy-hopper": rect(16, 16, PALETTE.enemy, PALETTE.playerAccent),
-  "enemy-turret": rect(16, 16, PALETTE.enemy, PALETTE.projectile),
+  "enemy-walker": rect(24, 24, PALETTE.enemy, PALETTE.hudFrame),
+  "enemy-hopper": rect(24, 24, PALETTE.enemy, PALETTE.playerAccent),
+  "enemy-turret": rect(24, 24, PALETTE.enemy, PALETTE.projectile),
   "projectile-enemy": rect(4, 4, PALETTE.enemy, null),
-  "boss-sentinel": rect(32, 32, PALETTE.boss, PALETTE.hudFrame),
+  "boss-sentinel": rect(48, 48, PALETTE.boss, PALETTE.hudFrame),
   "tiles-placeholder": {
     kind: "placeholder",
     shape: "tiles",

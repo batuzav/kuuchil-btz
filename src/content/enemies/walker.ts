@@ -5,7 +5,7 @@ export const walker: EnemyDef = {
   name: "Caminante",
   behavior: "walker",
   textureKey: "enemy-walker",
-  hitbox: { width: 12, height: 14, offsetX: 2, offsetY: 2 },
+  hitbox: { width: 18, height: 22, offsetX: 3, offsetY: 2 },
   maxHp: 3,
   contactDamage: 2,
   speed: 30,

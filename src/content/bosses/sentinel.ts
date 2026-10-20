@@ -1,6 +1,6 @@
 import type { BossDef } from "../types.ts";
 
-const BODY = { width: 24, height: 28, offsetX: 4, offsetY: 4 };
+const BODY = { width: 36, height: 44, offsetX: 6, offsetY: 4 };
 
 export const sentinel: BossDef = {
   id: "sentinel",

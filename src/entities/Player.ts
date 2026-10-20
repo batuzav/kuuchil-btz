@@ -71,8 +71,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (merged.fire) {
       fireProjectile(
         this.shots,
-        this.x + 8 * this.facing,
-        this.y - 8,
+        this.x + this.def.muzzle.x * this.facing,
+        this.y - this.def.muzzle.y,
         TUNING.shotSpeed * this.facing,
         0,
         this.def.projectileTextureKey,

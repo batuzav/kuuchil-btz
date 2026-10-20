@@ -8,7 +8,7 @@ La sensación del control se ajusta en `src/core/tuning.ts`. Cambia **una variab
 |---|---|---|---|
 | `runSpeed` | 90 | velocidad horizontal al correr (px/s) | más rápido y menos preciso / más pesado |
 | `gravityY` | 900 | gravedad del mundo (px/s²) | saltos más cortos y secos / más flotante |
-| `jumpVelocity` | 320 | impulso del salto (px/s) | salta más alto / salta más bajo |
+| `jumpVelocity` | 360 | impulso del salto (px/s) | salta más alto / salta más bajo |
 | `jumpCutMultiplier` | 0.4 | fracción de velocidad que queda al soltar el salto | salto casi fijo / salto muy variable |
 | `maxFallSpeed` | 320 | velocidad máxima de caída | caída más violenta / caída más suave |
 | `coyoteTimeMs` | 80 | margen para saltar tras dejar el suelo | más permisivo / más estricto |

@@ -63,7 +63,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
           fireProjectile(
             enemyShots,
             this.x,
-            this.y - 8,
+            this.y - this.def.hitbox.offsetY - this.def.hitbox.height / 2,
             this.def.projectileSpeed * towardPlayer,
             0,
             "projectile-enemy",

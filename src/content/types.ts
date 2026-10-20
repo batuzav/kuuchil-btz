@@ -11,6 +11,7 @@ export type CharacterDef = {
   readonly textureKey: string;
   readonly projectileTextureKey: string;
   readonly hitbox: Hitbox;
+  readonly muzzle: { readonly x: number; readonly y: number }; // desde los pies: x hacia delante, y hacia arriba (px)
   readonly maxHp: number;
   readonly shotDamage: number;
   readonly abilities: readonly string[];
