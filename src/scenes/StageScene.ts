@@ -1,13 +1,14 @@
 import Phaser from "phaser";
-import { DEFAULT_CHARACTER_ID, getCharacter, getStage } from "../content/registry.ts";
+import { DEFAULT_CHARACTER_ID, getCharacter, getEnemy, getStage } from "../content/registry.ts";
 import type { StageDef } from "../content/types.ts";
 import { extractSpawns } from "../content/validate.ts";
 import { SCENES } from "../core/gameConfig.ts";
-import { hpFraction, isDead } from "../core/health.ts";
+import { applyDamage, hpFraction, isDead } from "../core/health.ts";
 import { TUNING } from "../core/tuning.ts";
 import type { Bindings } from "../input/actions.ts";
 import { keyLabel } from "../input/bindings.ts";
 import type { InputManager } from "../input/inputManager.ts";
+import { Enemy } from "../entities/Enemy.ts";
 import { Player } from "../entities/Player.ts";
 import { type Hud, createHud } from "./hud.ts";
 import { BINDINGS_REGISTRY_KEY, createSceneInput } from "./sceneInput.ts";
@@ -23,6 +24,9 @@ export class StageScene extends Phaser.Scene {
   private pauseText: Phaser.GameObjects.Text | null = null;
   private hud: Hud | null = null;
   private mapHeight = 0;
+  private ground: Phaser.Tilemaps.TilemapLayer | null = null;
+  private enemies: Phaser.Physics.Arcade.Group | null = null;
+  private enemyShots: Phaser.Physics.Arcade.Group | null = null;
   private dying = false;
 
   constructor() {
@@ -37,6 +41,9 @@ export class StageScene extends Phaser.Scene {
     this.pauseText = null;
     this.hud = null;
     this.dying = false;
+    this.ground = null;
+    this.enemies = null;
+    this.enemyShots = null;
   }
 
   preload(): void {
@@ -55,8 +62,12 @@ export class StageScene extends Phaser.Scene {
 
     const map = this.make.tilemap({ key: stage.mapKey });
     const tileset = map.addTilesetImage(stage.tilesetName, stage.tilesetTextureKey, 16, 16, 0, 0);
-    const layer = tileset ? map.createLayer(stage.groundLayer, tileset, 0, 0) : null;
-    if (!layer) throw new Error(`No se pudo crear la capa ${stage.groundLayer}`);
+    const created = tileset ? map.createLayer(stage.groundLayer, tileset, 0, 0) : null;
+    // Phaser 4 puede devolver una TilemapGPULayer; la IA de enemigos necesita la TilemapLayer clásica.
+    if (!(created instanceof Phaser.Tilemaps.TilemapLayer)) {
+      throw new Error(`No se pudo crear la capa ${stage.groundLayer}`);
+    }
+    const layer = created;
     layer.setCollisionByExclusion([-1]);
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels + 64);
 
@@ -73,6 +84,37 @@ export class StageScene extends Phaser.Scene {
       (shot as Phaser.Physics.Arcade.Sprite).destroy();
     });
 
+    this.ground = layer;
+    this.enemyShots = this.physics.add.group({ allowGravity: false });
+    this.enemies = this.physics.add.group();
+    for (const spawn of spawns?.enemies ?? []) {
+      const enemyDef = getEnemy(spawn.enemyId);
+      if (!enemyDef) continue;
+      const enemy = new Enemy(this, spawn.x, spawn.y, enemyDef);
+      this.enemies.add(enemy);
+      enemy.configureBody();
+    }
+    this.physics.add.collider(this.enemies, layer);
+    this.physics.add.overlap(shots, this.enemies, (shot, enemyObj) => {
+      const bullet = shot as Phaser.Physics.Arcade.Sprite;
+      const enemy = enemyObj as Enemy;
+      const hit = applyDamage(enemy.health, Number(bullet.getData("damage")), 0);
+      enemy.health = hit.state;
+      bullet.destroy();
+      if (isDead(enemy.health)) enemy.destroy();
+    });
+    this.physics.add.overlap(this.player, this.enemies, (_p, enemyObj) => {
+      const enemy = enemyObj as Enemy;
+      this.player?.takeDamage(enemy.def.contactDamage, enemy.x);
+    });
+    this.physics.add.overlap(this.player, this.enemyShots, (_p, shotObj) => {
+      const bullet = shotObj as Phaser.Physics.Arcade.Sprite;
+      this.player?.takeDamage(Number(bullet.getData("damage")), bullet.x);
+      bullet.destroy();
+    });
+    this.physics.add.collider(this.enemyShots, layer, (shot) => {
+      (shot as Phaser.Physics.Arcade.Sprite).destroy();
+    });
     this.mapHeight = map.heightInPixels;
     this.hud = createHud(this);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -96,6 +138,12 @@ export class StageScene extends Phaser.Scene {
       this.die();
     } else {
       this.player.update(snapshot, delta);
+      const { ground, enemyShots } = this;
+      if (ground && enemyShots) {
+        for (const child of this.enemies?.getChildren() ?? []) {
+          (child as Enemy).update(delta, this.player, ground, enemyShots);
+        }
+      }
     }
     this.hud?.setPlayer(hpFraction(this.player.health));
   }
