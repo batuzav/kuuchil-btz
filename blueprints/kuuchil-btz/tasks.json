@@ -313,7 +313,7 @@
       "src/content/registry.ts",
       "tests/content-registry.test.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E2-T6",
