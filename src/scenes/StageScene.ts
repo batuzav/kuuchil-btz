@@ -3,10 +3,13 @@ import { DEFAULT_CHARACTER_ID, getCharacter, getStage } from "../content/registr
 import type { StageDef } from "../content/types.ts";
 import { extractSpawns } from "../content/validate.ts";
 import { SCENES } from "../core/gameConfig.ts";
+import { hpFraction, isDead } from "../core/health.ts";
+import { TUNING } from "../core/tuning.ts";
 import type { Bindings } from "../input/actions.ts";
 import { keyLabel } from "../input/bindings.ts";
 import type { InputManager } from "../input/inputManager.ts";
 import { Player } from "../entities/Player.ts";
+import { type Hud, createHud } from "./hud.ts";
 import { BINDINGS_REGISTRY_KEY, createSceneInput } from "./sceneInput.ts";
 
 const STYLE = { fontFamily: "monospace", fontSize: "8px", color: "#e5e7eb" };
@@ -18,6 +21,9 @@ export class StageScene extends Phaser.Scene {
   private player: Player | null = null;
   private paused = false;
   private pauseText: Phaser.GameObjects.Text | null = null;
+  private hud: Hud | null = null;
+  private mapHeight = 0;
+  private dying = false;
 
   constructor() {
     super(SCENES.stage);
@@ -29,6 +35,8 @@ export class StageScene extends Phaser.Scene {
     this.player = null;
     this.paused = false;
     this.pauseText = null;
+    this.hud = null;
+    this.dying = false;
   }
 
   preload(): void {
@@ -65,6 +73,8 @@ export class StageScene extends Phaser.Scene {
       (shot as Phaser.Physics.Arcade.Sprite).destroy();
     });
 
+    this.mapHeight = map.heightInPixels;
+    this.hud = createHud(this);
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.startFollow(this.player, true);
   }
@@ -80,7 +90,24 @@ export class StageScene extends Phaser.Scene {
       if (snapshot.pressed.jump) this.scene.start(SCENES.menu);
       return;
     }
-    this.player.update(snapshot, delta);
+    if (this.player.y > this.mapHeight + 16)
+      this.player.takeDamage(this.player.def.maxHp, this.player.x);
+    if (isDead(this.player.health)) {
+      this.die();
+    } else {
+      this.player.update(snapshot, delta);
+    }
+    this.hud?.setPlayer(hpFraction(this.player.health));
+  }
+
+  private die(): void {
+    if (this.dying) return;
+    this.dying = true;
+    this.hud?.showMessage("K.O.");
+    this.player?.setVelocity(0, 0);
+    this.time.delayedCall(TUNING.deathRestartDelayMs, () => {
+      this.scene.restart({ stageId: this.stageId });
+    });
   }
 
   private togglePause(): void {
