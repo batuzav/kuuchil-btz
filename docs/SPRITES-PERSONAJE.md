@@ -1,12 +1,12 @@
 # Guía de sprites del personaje principal
 
-Esta guía sirve para dibujar (tú o un artista) el sprite de Kuuchil y pasárselo al proyecto. Hoy el juego usa un rectángulo azul de 16×16 px como placeholder.
+Esta guía sirve para dibujar (tú o un artista) el sprite de Business Man y pasárselo al proyecto. Hoy el juego usa un rectángulo azul de 16×16 px como placeholder.
 
 ## Estado actual del juego (2026-10-20)
 
-- Kuuchil ya tiene arte real y animaciones: `public/sprites/kuuchil.png`, hoja de celdas de 48×48, 9 columnas y una fila por animación (idle, run, jump, dash, shoot, hurt, death).
+- Business Man ya tiene arte real y animaciones: `public/sprites/business-man.png`, hoja de celdas de 48×48, 9 columnas y una fila por animación (idle, run, jump, dash, shoot, hurt, death).
 - El cuerpo dibujado mide unos 10×37 px y los pies quedan en la última fila de la celda (origen 0.5, 1 de Phaser).
-- Qué cuadros usa cada animación, a cuántos fps, y la hitbox y la boca de la pistola, viven en `src/content/characters/kuuchil.ts`. La hitbox mide 10×30 y está centrada en la celda para que no se desplace al voltear el sprite.
+- Qué cuadros usa cada animación, a cuántos fps, y la hitbox y la boca de la pistola, viven en `src/content/characters/business-man.ts`. La hitbox mide 10×30 y está centrada en la celda para que no se desplace al voltear el sprite.
 - El código que elige la animación según el estado está en `src/characters/animationState.ts` (probado en `tests/animation-state.test.ts`).
 - El arte se generó con Pixellab. Los cuadros originales están en `art/pixellab/frames/` y `node art/tools/build-sheet.mjs` rehace la hoja (recorta de 64 a 48 y alinea los pies).
 
@@ -60,9 +60,9 @@ Consejos de estilo: paleta limitada, contorno oscuro, sin degradados ni suavizad
 
 ## Cómo se integra (cuando tengas la hoja)
 
-1. Copia el PNG a `public/sprites/` (por ejemplo `public/sprites/kuuchil.png`).
+1. Copia el PNG a `public/sprites/` (por ejemplo `public/sprites/business-man.png`).
 2. En `src/assets/manifest.ts`, cambia la entrada `player` de `{ kind: "placeholder", ... }` a:
-   `{ kind: "file", path: "sprites/kuuchil.png", frameWidth: 32, frameHeight: 32 }` (usa tu tamaño de celda real).
+   `{ kind: "file", path: "sprites/business-man.png", frameWidth: 32, frameHeight: 32 }` (usa tu tamaño de celda real).
 3. No renombres la clave `player`: el contenido la referencia por nombre.
 4. No toques la hitbox "para ajustarla al dibujo" sin probar: cambia el combate.
 5. Comprueba con `pnpm test tests/assets.test.ts`, `pnpm build` y `pnpm check:dist`, y mira el resultado en `pnpm dev`.
@@ -72,8 +72,8 @@ Con una sola imagen fija esto ya funciona hoy. Con una hoja de varias animacione
 ## Cómo cambiar un cuadro o una animación
 
 1. Pon los cuadros nuevos en `art/pixellab/frames/<animación>/<n>.png` (48×48 o 64×64, mirando a la derecha).
-2. `node art/tools/build-sheet.mjs` regenera `public/sprites/kuuchil.png`.
-3. Si cambió el número de cuadros o cuáles se usan, edita `animations` en `src/content/characters/kuuchil.ts`.
+2. `node art/tools/build-sheet.mjs` regenera `public/sprites/business-man.png`.
+3. Si cambió el número de cuadros o cuáles se usan, edita `animations` en `src/content/characters/business-man.ts`.
 4. `pnpm gate` y prueba en `pnpm dev`.
 
 Un personaje nuevo en el futuro: su propia hoja, su entrada en `src/assets/manifest.ts` y su archivo en `src/content/characters/` con sus `animations`.

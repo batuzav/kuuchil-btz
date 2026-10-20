@@ -1,4 +1,4 @@
-// Arma public/sprites/kuuchil.png a partir de art/pixellab/frames/<animación>/<n>.png
+// Arma public/sprites/business-man.png a partir de art/pixellab/frames/<animación>/<n>.png
 // Uso: node art/tools/build-sheet.mjs
 // Celda 48x48, 9 columnas, una fila por animación. Los pies quedan en la fila 47 (origen 0.5,1 de Phaser).
 import { mkdirSync, readdirSync, writeFileSync } from "node:fs";
@@ -59,6 +59,6 @@ ROWS.forEach((row, r) => {
   });
 });
 mkdirSync("public/sprites", { recursive: true });
-encode("public/sprites/kuuchil.png", sheetW, ROWS.length * CELL, sheet);
+encode("public/sprites/business-man.png", sheetW, ROWS.length * CELL, sheet);
 writeFileSync("art/pixellab/sheet-layout.json", `${JSON.stringify(layout, null, 2)}\n`);
 console.log(layout);

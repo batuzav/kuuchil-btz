@@ -1,14 +1,14 @@
 import type { CharacterDef } from "../types.ts";
 
-// Hoja public/sprites/kuuchil.png: celdas de 48x48, 9 columnas; una fila por animación
+// Hoja public/sprites/business-man.png: celdas de 48x48, 9 columnas; una fila por animación
 // (idle, run, jump, dash, shoot, hurt, death). Índice de cuadro = fila * 9 + columna.
 const COLS = 9;
 const row = (r: number, ...cols: number[]): number[] => cols.map((c) => r * COLS + c);
 
-export const kuuchil: CharacterDef = {
-  id: "kuuchil",
-  name: "Kuuchil",
-  textureKey: "player",
+export const businessMan: CharacterDef = {
+  id: "business-man",
+  name: "Business Man",
+  textureKey: "business-man",
   projectileTextureKey: "projectile-player",
   // Cuerpo dibujado: ~10 px de ancho y 37 de alto, pies en la fila 47 de la celda.
   // La hitbox es más baja que el dibujo (30 de 37 px) para caber bajo plataformas a 32 px del suelo.

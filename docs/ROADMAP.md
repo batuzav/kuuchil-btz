@@ -9,9 +9,9 @@ Esto son anotaciones, no tareas. Nada de lo de aquí está construido ni debe co
 ### Cómo está hoy (una sola arma, la pistola)
 
 - Daño, cadencia, velocidad, vida de la bala y máximo en pantalla están fijos en `src/core/tuning.ts` (`shotSpeed`, `shotCooldownMs`, `shotLifetimeMs`, `maxShotsOnScreen`).
-- El daño (`shotDamage`), la textura de la bala (`projectileTextureKey`) y la boca del arma (`muzzle`) están en `src/content/characters/kuuchil.ts`.
+- El daño (`shotDamage`), la textura de la bala (`projectileTextureKey`) y la boca del arma (`muzzle`) están en `src/content/characters/business-man.ts`.
 - La habilidad `shoot` vive en `src/characters/abilities/shoot.ts` y lee esos valores.
-- La animación de disparo es una fila de la hoja `public/sprites/kuuchil.png`, referenciada desde `animations.shoot` del personaje.
+- La animación de disparo es una fila de la hoja `public/sprites/business-man.png`, referenciada desde `animations.shoot` del personaje.
 
 ### Qué cambiaría cada tipo de arma
 

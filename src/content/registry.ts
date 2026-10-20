@@ -1,5 +1,5 @@
 import { sentinel } from "./bosses/sentinel.ts";
-import { kuuchil } from "./characters/kuuchil.ts";
+import { businessMan } from "./characters/business-man.ts";
 import { hopper } from "./enemies/hopper.ts";
 import { turret } from "./enemies/turret.ts";
 import { walker } from "./enemies/walker.ts";
@@ -7,13 +7,13 @@ import { stage01 } from "./stages/stage-01/stage.ts";
 import type { BossDef, CharacterDef, ContentRegistry, EnemyDef, StageDef } from "./types.ts";
 
 export const FIRST_STAGE_ID = "stage-01";
-export const DEFAULT_CHARACTER_ID = "kuuchil";
+export const DEFAULT_CHARACTER_ID = "business-man";
 
 export const CONTENT: ContentRegistry = {
   stages: [stage01],
   bosses: [sentinel],
   enemies: [walker, hopper, turret],
-  characters: [kuuchil],
+  characters: [businessMan],
 };
 
 export function getStage(id: string): StageDef | undefined {

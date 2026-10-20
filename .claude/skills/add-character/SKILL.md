@@ -16,7 +16,7 @@ description: Añade un personaje jugable o una habilidad nueva (wall-jump, sable
 5. Si necesita datos del mundo que `AbilityInput` no trae (p. ej. "toco pared"), añade el campo a `AbilityInput` y llénalo en `src/entities/Player.ts`.
 
 ## Pasos — personaje nuevo
-1. Crea `src/content/characters/<id>.ts` copiando `src/content/characters/kuuchil.ts`: `id`, `name`, `textureKey`, `projectileTextureKey`, `hitbox`, `maxHp`, `shotDamage`, `abilities` (orden = orden de aplicación).
+1. Crea `src/content/characters/<id>.ts` copiando `src/content/characters/business-man.ts`: `id`, `name`, `textureKey`, `projectileTextureKey`, `hitbox`, `maxHp`, `shotDamage`, `abilities` (orden = orden de aplicación).
 2. Regístralo en `src/content/registry.ts` (`CONTENT.characters`).
 3. v1 usa `DEFAULT_CHARACTER_ID`; la selección de personaje es post-v1.
 
