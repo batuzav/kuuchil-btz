@@ -118,6 +118,6 @@ Skills del proyecto (se activan solas): `add-stage`, `add-boss`, `add-character`
 2. Escenas y entidades leen **acciones**, nunca teclas. Las teclas físicas viven en `src/input/`.
 3. Nada de `phaser` en módulos puros ni en `scripts/`; si un test necesita Phaser, la lógica está en el lugar equivocado.
 4. `localStorage` solo vía `src/input/bindingsStore.ts`, siempre con `try/catch` y caída a defaults.
-5. No implementes nada de los No-Objetivos de `blueprints/kuuchil-btz/blueprint.md` §1 (audio, guardado, gamepad, wall-jump, sable, etc.).
+5. No implementes nada de los No-Objetivos de `blueprints/kuuchil-btz/blueprint.md` §1 (audio, guardado, gamepad, wall-jump, sable, etc.). Las ideas futuras, como más armas, están anotadas en `docs/ROADMAP.md`.
 6. Nunca marques una tarea como hecha con un gate en rojo, y nunca edites un comando `verify` para que pase.
 7. Nunca commitees `dist/` ni `node_modules/`.

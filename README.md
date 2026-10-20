@@ -43,4 +43,5 @@ Todos se pueden cambiar desde **Controles** en el menú; se guardan en el navega
 
 - `docs/PLAYTEST.md`: cómo afinar la sensación y checklist del jefe.
 - `docs/DEPLOY.md`: cómo publicar el juego.
+- `docs/ROADMAP.md`: ideas para el futuro, por ahora el diseño propuesto para añadir más armas.
 - Skills del proyecto en `.claude/skills/`: `add-stage`, `add-boss`, `add-character` y `swap-art`.
