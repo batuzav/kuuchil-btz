@@ -1,3 +1,4 @@
+import { kuuchil } from "./characters/kuuchil.ts";
 import type { BossDef, CharacterDef, ContentRegistry, EnemyDef, StageDef } from "./types.ts";
 
 export const FIRST_STAGE_ID = "stage-01";
@@ -7,7 +8,7 @@ export const CONTENT: ContentRegistry = {
   stages: [],
   bosses: [],
   enemies: [],
-  characters: [],
+  characters: [kuuchil],
 };
 
 export function getStage(id: string): StageDef | undefined {

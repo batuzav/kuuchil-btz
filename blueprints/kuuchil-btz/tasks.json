@@ -283,7 +283,7 @@
       "src/entities/Projectile.ts",
       "tests/character.test.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E2-T5",
