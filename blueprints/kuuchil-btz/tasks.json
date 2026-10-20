@@ -253,7 +253,7 @@
       "src/characters/abilityRegistry.ts",
       "tests/abilities-combat.test.ts"
     ],
-    "status": "pending"
+    "status": "done"
   },
   {
     "id": "E2-T4",
