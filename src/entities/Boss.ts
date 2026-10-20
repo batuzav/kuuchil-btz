@@ -45,6 +45,7 @@ export class Boss extends Phaser.Physics.Arcade.Sprite {
     player: Phaser.GameObjects.Sprite,
     bossShots: Phaser.Physics.Arcade.Group,
   ): void {
+    if (!this.body) return;
     const previous = this.fsm.kind;
     this.fsm = stepBoss(this.def, this.fsm, dtMs, this.health.hp);
     const kind = this.fsm.kind;

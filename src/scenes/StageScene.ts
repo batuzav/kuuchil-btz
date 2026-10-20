@@ -197,7 +197,8 @@ export class StageScene extends Phaser.Scene {
     const boss = new Boss(this, spawn.x, spawn.y, bossDef);
     this.boss = boss;
     this.physics.add.collider(boss, ground);
-    this.physics.add.overlap(playerShots, boss, (shot) => {
+    // Sprite primero, grupo después: con el grupo primero Phaser invierte los argumentos del callback.
+    this.physics.add.overlap(boss, playerShots, (_boss, shot) => {
       const bullet = shot as Phaser.Physics.Arcade.Sprite;
       boss.health = applyDamage(boss.health, Number(bullet.getData("damage")), 0).state;
       bullet.destroy();
