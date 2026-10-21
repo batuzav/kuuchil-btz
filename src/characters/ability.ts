@@ -16,6 +16,7 @@ export type AbilityEffect = {
   velocityY?: number;
   ignoreGravity?: boolean;
   fire?: boolean;
+  crouching?: boolean;
 };
 
 export type Ability = {

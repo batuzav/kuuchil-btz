@@ -1,11 +1,11 @@
 // Arma public/sprites/business-man.png a partir de art/pixellab/frames/<animación>/<n>.png
 // Uso: node art/tools/build-sheet.mjs
-// Celda 48x48, 9 columnas, una fila por animación. Los pies quedan en la fila 47 (origen 0.5,1 de Phaser).
+// Celda 48x48, 13 columnas, una fila por animación. Los pies quedan en la fila 47 (origen 0.5,1 de Phaser).
 import { mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { decode, encode } from "./png.mjs";
 
 const CELL = 48;
-const COLS = 9;
+const COLS = 13;
 const FEET = CELL - 1;
 // "ground": desplazamiento vertical constante por animación (conserva el balanceo de los pies).
 // "air": cada cuadro baja hasta que su píxel más bajo toque la fila FEET.
@@ -17,6 +17,8 @@ const ROWS = [
   { name: "shoot", mode: "ground" },
   { name: "hurt", mode: "ground" },
   { name: "death", mode: "air" },
+  { name: "crouch", mode: "ground" },
+  { name: "crouch-shoot", mode: "ground" },
 ];
 
 function bounds(f) {

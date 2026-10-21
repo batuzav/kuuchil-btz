@@ -10,8 +10,8 @@ describe("default character", () => {
     for (const id of character?.abilities ?? []) expect(hasAbility(id)).toBe(true);
   });
 
-  it("uses run, jump, dash, shoot in that order with a sane hitbox", () => {
-    expect(character?.abilities).toEqual(["run", "jump", "dash", "shoot"]);
+  it("uses run, jump, crouch, dash, shoot in that order with a sane hitbox", () => {
+    expect(character?.abilities).toEqual(["run", "jump", "crouch", "dash", "shoot"]);
     const h = character?.hitbox;
     expect(h?.width).toBeGreaterThan(0);
     expect(h?.height).toBeGreaterThan(0);

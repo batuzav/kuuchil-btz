@@ -63,6 +63,25 @@ describe("jump", () => {
   });
 });
 
+describe("crouch", () => {
+  it("crouches and stands still when down is held on the ground", () => {
+    const crouch = createAbility("crouch", TUNING);
+    expect(crouch.update(input({ grounded: true, held: { down: true } }))).toEqual({
+      velocityX: 0,
+      crouching: true,
+    });
+  });
+
+  it("does nothing in the air, without down, or when jump is pressed", () => {
+    const crouch = createAbility("crouch", TUNING);
+    expect(crouch.update(input({ grounded: false, held: { down: true } }))).toEqual({});
+    expect(crouch.update(input({ grounded: true }))).toEqual({});
+    expect(
+      crouch.update(input({ grounded: true, held: { down: true }, pressed: { jump: true } })),
+    ).toEqual({});
+  });
+});
+
 describe("registry", () => {
   it("throws a named error for unknown abilities", () => {
     expect(() => createAbility("wall-jump", TUNING)).toThrow(/wall-jump/);

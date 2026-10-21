@@ -12,6 +12,8 @@ export type CharacterAnimState =
   | "fall"
   | "dash"
   | "shoot"
+  | "crouch"
+  | "crouchShoot"
   | "hurt"
   | "dead";
 
@@ -28,6 +30,8 @@ export type CharacterDef = {
   readonly projectileTextureKey: string;
   readonly hitbox: Hitbox;
   readonly muzzle: { readonly x: number; readonly y: number }; // desde los pies: x hacia delante, y hacia arriba (px)
+  readonly crouchHitbox: Hitbox; // misma base que `hitbox`, más baja
+  readonly crouchMuzzle: { readonly x: number; readonly y: number }; // boca del arma agachado
   readonly maxHp: number;
   readonly shotDamage: number;
   readonly abilities: readonly string[];

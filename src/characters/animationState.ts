@@ -7,6 +7,7 @@ export type AnimContext = {
   readonly velocityY: number;
   readonly dashing: boolean;
   readonly shooting: boolean;
+  readonly crouching: boolean;
   readonly hurt: boolean;
   readonly dead: boolean;
 };
@@ -14,12 +15,13 @@ export type AnimContext = {
 export const animationKey = (characterId: string, state: string): string =>
   `${characterId}:${state}`;
 
-/** Prioridad: muerto > herido > dash > aire > disparo (solo parado) > correr > idle. */
+/** Prioridad: muerto > herido > dash > aire > agachado > disparo (solo parado) > correr > idle. */
 export function pickAnimation(c: AnimContext): CharacterAnimState {
   if (c.dead) return "dead";
   if (c.hurt) return "hurt";
   if (c.dashing) return "dash";
   if (!c.grounded) return c.velocityY < 0 ? "jump" : "fall";
+  if (c.crouching) return c.shooting ? "crouchShoot" : "crouch";
   const moving = Math.abs(c.velocityX) > TUNING.runAnimMinSpeed;
   if (c.shooting && !moving) return "shoot";
   return moving ? "run" : "idle";

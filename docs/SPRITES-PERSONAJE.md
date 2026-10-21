@@ -4,9 +4,9 @@ Esta guía sirve para dibujar (tú o un artista) el sprite de Business Man y pas
 
 ## Estado actual del juego (2026-10-20)
 
-- Business Man ya tiene arte real y animaciones: `public/sprites/business-man.png`, hoja de celdas de 48×48, 9 columnas y una fila por animación (idle, run, jump, dash, shoot, hurt, death).
+- Business Man ya tiene arte real y animaciones: `public/sprites/business-man.png`, hoja de celdas de 48×48, 13 columnas y una fila por animación (idle, run, jump, dash, shoot, hurt, death, crouch, crouch-shoot).
 - El cuerpo dibujado mide unos 10×37 px y los pies quedan en la última fila de la celda (origen 0.5, 1 de Phaser).
-- Qué cuadros usa cada animación, a cuántos fps, y la hitbox y la boca de la pistola, viven en `src/content/characters/business-man.ts`. La hitbox mide 10×30 y está centrada en la celda para que no se desplace al voltear el sprite.
+- Qué cuadros usa cada animación, a cuántos fps, y la hitbox y la boca de la pistola, viven en `src/content/characters/business-man.ts`. La hitbox de pie mide 10×30 y la agachada 12×22 (misma base); ambas están centradas en la celda para que no se desplace al voltear el sprite.
 - El código que elige la animación según el estado está en `src/characters/animationState.ts` (probado en `tests/animation-state.test.ts`).
 - El arte se generó con Pixellab. Los cuadros originales están en `art/pixellab/frames/` y `node art/tools/build-sheet.mjs` rehace la hoja (recorta de 64 a 48 y alinea los pies).
 

@@ -29,6 +29,7 @@ Todos se pueden cambiar desde **Controles** en el menú; se guardan en el navega
 | Mover / apuntar | Flechas |
 | Saltar | Z |
 | Disparar | X |
+| Agacharse (mantener, en el suelo) | ↓ |
 | Dash | C |
 | Pausa / volver | Esc |
 

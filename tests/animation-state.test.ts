@@ -11,6 +11,7 @@ const base: AnimContext = {
   velocityY: 0,
   dashing: false,
   shooting: false,
+  crouching: false,
   hurt: false,
   dead: false,
 };
@@ -30,6 +31,11 @@ describe("pickAnimation", () => {
     expect(pickAnimation({ ...base, shooting: true, grounded: false, velocityY: -50 })).toBe(
       "jump",
     );
+  });
+
+  it("crouches on the ground, with its own shoot pose", () => {
+    expect(pickAnimation({ ...base, crouching: true })).toBe("crouch");
+    expect(pickAnimation({ ...base, crouching: true, shooting: true })).toBe("crouchShoot");
   });
 
   it("applies the priority dead > hurt > dash > air > shoot", () => {
@@ -68,6 +74,17 @@ describe("character sheet", () => {
         expect(f).toBeLessThan(total);
       }
     }
+  });
+
+  it("crouches on the same base as standing, smaller, centered and inside the cell", () => {
+    if (spec?.kind !== "file" || !spec.frameWidth || !spec.frameHeight || !def) return;
+    const stand = def.hitbox;
+    const crouch = def.crouchHitbox;
+    expect(crouch.height).toBeLessThan(stand.height);
+    expect(crouch.offsetY + crouch.height).toBe(stand.offsetY + stand.height);
+    expect(crouch.offsetX + crouch.width / 2).toBe(spec.frameWidth / 2);
+    expect(crouch.offsetX).toBeGreaterThanOrEqual(0);
+    expect(def.crouchMuzzle.y).toBeLessThan(def.muzzle.y);
   });
 
   it("keeps the hitbox inside the cell and centered, so flipping does not shift it", () => {

@@ -16,6 +16,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private facing: 1 | -1 = 1;
   private knockbackMs = 0;
   private shootMs = 0;
+  private crouching = false;
   private hurtMs = 0;
 
   constructor(
@@ -72,13 +73,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (merged.velocityY !== undefined) this.setVelocityY(merged.velocityY);
     body.setAllowGravity(!merged.ignoreGravity);
     this.setFlipX(this.facing < 0);
+    this.applyCrouch(merged.crouching === true && merged.ignoreGravity !== true);
 
     if (merged.fire) {
       this.shootMs = TUNING.shootPoseMs;
+      const muzzle = this.crouching ? this.def.crouchMuzzle : this.def.muzzle;
       fireProjectile(
         this.shots,
-        this.x + this.def.muzzle.x * this.facing,
-        this.y - this.def.muzzle.y,
+        this.x + muzzle.x * this.facing,
+        this.y - muzzle.y,
         TUNING.shotSpeed * this.facing,
         0,
         this.def.projectileTextureKey,
@@ -95,10 +98,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         velocityY: body.velocity.y,
         dashing: merged.ignoreGravity === true,
         shooting: this.shootMs > 0,
+        crouching: this.crouching,
         hurt: this.hurtMs > 0,
         dead: isDead(this.health),
       }),
     );
+  }
+
+  /** Cambia la hitbox; la base queda a la misma altura, así que los pies no se mueven. */
+  private applyCrouch(on: boolean): void {
+    if (on === this.crouching) return;
+    this.crouching = on;
+    const box = on ? this.def.crouchHitbox : this.def.hitbox;
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    body.setSize(box.width, box.height);
+    body.setOffset(box.offsetX, box.offsetY);
   }
 
   playState(state: CharacterAnimState): void {

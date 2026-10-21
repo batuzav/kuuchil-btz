@@ -20,7 +20,7 @@ const LABELS: Record<string, string> = {
   left: "Izquierda",
   right: "Derecha",
   up: "Arriba",
-  down: "Abajo",
+  down: "Abajo / Agacharse",
   jump: "Saltar",
   shoot: "Disparar",
   dash: "Dash",
